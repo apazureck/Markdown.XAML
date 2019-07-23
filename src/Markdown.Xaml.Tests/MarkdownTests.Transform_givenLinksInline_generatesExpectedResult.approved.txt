@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-16"?>
+﻿<?xml version="1.0" encoding="utf-16"?>
 <FlowDocument PagePadding="0,0,0,0" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
   <Paragraph>Just a <Hyperlink Command="GoToPage" CommandParameter="/url/">URL</Hyperlink>.</Paragraph>
   <Paragraph>
