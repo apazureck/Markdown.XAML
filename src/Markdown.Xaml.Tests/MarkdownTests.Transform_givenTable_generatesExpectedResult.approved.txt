@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<FlowDocument PagePadding="0,0,0,0" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+  <Paragraph>Markdown file</Paragraph>
+  <Table>
+    <TableRowGroup>
+      <TableRow>
+        <TableCell>
+          <Paragraph xml:space="preserve"> Column 1 </Paragraph>
+        </TableCell>
+        <TableCell>
+          <Paragraph xml:space="preserve"> Column 2 </Paragraph>
+        </TableCell>
+        <TableCell>
+          <Paragraph xml:space="preserve"> Column 3</Paragraph>
+        </TableCell>
+      </TableRow>
+    </TableRowGroup>
+    <TableRowGroup>
+      <TableRow>
+        <TableCell>
+          <Paragraph />
+        </TableCell>
+        <TableCell>
+          <Paragraph xml:space="preserve"> Column 1 </Paragraph>
+        </TableCell>
+        <TableCell>
+          <Paragraph xml:space="preserve"> Column 2 </Paragraph>
+        </TableCell>
+        <TableCell>
+          <Paragraph xml:space="preserve"> Column 3</Paragraph>
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell>
+          <Paragraph />
+        </TableCell>
+        <TableCell>
+          <Paragraph xml:space="preserve"> Column 1 </Paragraph>
+        </TableCell>
+        <TableCell>
+          <Paragraph xml:space="preserve"> Column 2 </Paragraph>
+        </TableCell>
+        <TableCell>
+          <Paragraph xml:space="preserve"> Column 3</Paragraph>
+        </TableCell>
+      </TableRow>
+    </TableRowGroup>
+  </Table>
+  <Paragraph />
+</FlowDocument>

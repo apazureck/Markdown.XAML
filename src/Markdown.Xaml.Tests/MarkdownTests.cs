@@ -1,6 +1,7 @@
 ﻿using ApprovalTests;
 using ApprovalTests.Reporters;
 using NUnit.Framework;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Windows.Markup;
@@ -69,6 +70,18 @@ namespace Markdown.Xaml.Tests
             var markdown = new Markdown();
             var result = markdown.Transform(text);
             Approvals.Verify(AsXaml(result));
+        }
+
+        [Test]
+        [RequiresSTA]
+        public void Transform_givenTable_generatesExpectedResult()
+        {
+            var text = LoadText("Tables.md");
+            var markdown = new Markdown();
+            var result = markdown.Transform(text);
+            var xaml = AsXaml(result);
+            Console.WriteLine(xaml);
+            Approvals.Verify(xaml);
         }
 
         private string LoadText(string name)

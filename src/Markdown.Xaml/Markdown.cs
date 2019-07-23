@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -131,6 +133,20 @@ namespace Markdown.Xaml
         public static readonly DependencyProperty SeparatorStyleProperty =
             DependencyProperty.Register("SeparatorStyle", typeof(Style), typeof(Markdown), new PropertyMetadata(null));
 
+
+
+        public Style TableStyle
+        {
+            get { return (Style)GetValue(TableStyleProperty); }
+            set { SetValue(TableStyleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for TableStyle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TableStyleProperty =
+            DependencyProperty.Register("TableStyle", typeof(Style), typeof(Markdown), new PropertyMetadata(null));
+
+
+
         public string AssetPathRoot
         {
           get { return (string)GetValue(AssetPathRootProperty); }
@@ -180,7 +196,8 @@ namespace Markdown.Xaml
             return DoHeaders(text,
                 s1 => DoHorizontalRules(s1,
                     s2 => DoLists(s2,
-                    sn => FormParagraphs(sn))));
+                    s3 => DoTables(s3, 
+                    sn => FormParagraphs(sn)))));
 
             //text = DoCodeBlocks(text);
             //text = DoBlockQuotes(text);
@@ -590,6 +607,8 @@ namespace Markdown.Xaml
             return block;
         }
 
+        #region Horizontal Rules
+
         private static Regex _horizontalRules = new Regex(@"
             ^[ ]{0,3}         # Leading space
                 ([-*_])       # $1: First marker
@@ -641,6 +660,70 @@ namespace Markdown.Xaml
             var container = new BlockUIContainer(line);
             return container;
         }
+
+        #endregion
+
+        #region Tables
+
+        private static readonly Regex tableRegex = new Regex(@"(?<=(?:\r?\n){2}|^)(?<table>[^\r\n]*\|[^\r\n]*(?:\r?\n)?)+(?=(?:\r?\n){2}|$)", RegexOptions.Multiline | RegexOptions.Compiled);
+
+        private IEnumerable<Block> DoTables(string text, Func<string, IEnumerable<Block>> defaultHandler)
+        {
+            return Evaluate<Block>(text, tableRegex, EvaluateTable, defaultHandler);
+        }
+
+        private Block EvaluateTable(Match match)
+        {
+            string tablestring = match.Value;
+
+            var table = new Table();
+            if(TableStyle != null)
+            {
+                table.Style = TableStyle;
+            }
+
+            using(var sr = new StringReader(tablestring))
+            {
+                // Read headers first
+                string header = sr.ReadLine();
+                string separator = sr.ReadLine();
+                if (separator != null && new Regex(@"^\s*?\|\s*-{3,}").IsMatch(separator))
+                {
+                    string[] headers = header.Split('|').Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                    var rgheaders = new TableRowGroup();
+                    var headerrow = new TableRow();
+                    table.RowGroups.Add(rgheaders);
+                    rgheaders.Rows.Add(headerrow);
+                    foreach(string headerentry in headers)
+                    {
+                        headerrow.Cells.Add(new TableCell(Create<Paragraph, Inline>(RunSpanGamut(headerentry))));
+                    }
+                }
+                else
+                {
+                    return new Paragraph(new Run(match.Value));
+                }
+
+                string sRow;
+                var rg = new TableRowGroup();
+
+                while ((sRow = sr.ReadLine()) != null)
+                {
+                    var rowparts = sRow.Split('|').Where(s => !string.IsNullOrEmpty(s));
+                    var row = new TableRow();
+                    foreach(var rowpart in rowparts)
+                    {
+                        row.Cells.Add(new TableCell(Create<Paragraph, Inline>(RunSpanGamut(rowpart))));
+                    }
+                    rg.Rows.Add(row);
+                }
+
+                table.RowGroups.Add(rg);
+            }
+            return table;
+        }
+
+        #endregion
 
         private static string _wholeList = string.Format(@"
             (                               # $1 = whole list
